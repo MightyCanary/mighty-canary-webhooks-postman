@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "0bae2f57-36fc-4db9-aa4b-74627846647f",
+		"name": "Mighty Canary Tableau Webhooks",
+		"description": "This collection adds Mighty Canary Webhooks to your Tableau account",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1a. Sign in (username and password)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"pm.environment.set(\"tableau-auth-token\", response.credentials.token);",
+							"pm.environment.set(\"site-id\", response.credentials.site.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"credentials\": {\r\n     \"site\": {\r\n        \"contentUrl\": \"{{TableauContentId}}\"\r\n     },\r\n     \"name\": \"{{TableauUserName}}\",\r\n     \"password\": \"{{TableauPassword}}\"\r\n  }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.6/auth/signin",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.6",
+						"auth",
+						"signin"
+					]
+				},
+				"description": "Sign in with a usernamd and password and get an authentication token from Tableau. Then update the Postman collection variables to use the returned authentication token and site ID."
+			},
+			"response": []
+		},
+		{
+			"name": "1b. Sign in (personal access token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();",
+							"pm.environment.set(\"tableau-auth-token\", response.credentials.token);",
+							"pm.environment.set(\"site-id\", response.credentials.site.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"credentials\": {\r\n     \"site\": {\r\n        \"contentUrl\": \"{{TableauContentId}}\"\r\n     },\r\n     \"personalAccessTokenName\": \"{{TableauAuthToken}}\",\r\n     \"personalAccessTokenSecret\": \"{{TableauSecret}}\"\r\n  }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.6/auth/signin",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.6",
+						"auth",
+						"signin"
+					]
+				},
+				"description": "Sign in with a personal access token and get an authentication token from Tableau. Then update the Postman collection variables to use the returned authentication token and site ID."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Create WorkbookRefreshFailed webhook (2020.3+)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Tableau-Auth",
+						"value": "{{tableau-auth-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"webhook\": {\r\n      \"webhook-destination\": {\r\n         \"webhook-destination-http\": {\r\n            \"method\": \"POST\",\r\n            \"url\": \"https://app.mightycanary.com/tableau_webhooks/{{MightyCanaryAccountId}}/datasource_refresh_failed\"\r\n         }\r\n      },        \r\n      \"event\": \"WorkbookRefreshFailed\",\r\n      \"name\": \"Mighty Canary Workbook Refresh Failed Webhook\"\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.9/sites/{{site-id}}/webhooks",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.9",
+						"sites",
+						"{{site-id}}",
+						"webhooks"
+					]
+				},
+				"description": "Create a new webhook on the given site using the name, event type, and destination URL provided. This is for Tableau version 2020.3+ (api v3.9+)."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Create WorkbookRefreshSucceeded webhook (2020.3+)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Tableau-Auth",
+						"value": "{{tableau-auth-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"webhook\": {\r\n      \"webhook-destination\": {\r\n         \"webhook-destination-http\": {\r\n            \"method\": \"POST\",\r\n            \"url\": \"https://app.mightycanary.com/tableau_webhooks/{{MightyCanaryAccountId}}/datasource_refresh_succeeded\"\r\n         }\r\n      },\r\n      \"event\": \"WorkbookRefreshSucceeded\",\r\n      \"name\": \"Mighty Canary Workbook Refresh Succeeded Webhook\"\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.9/sites/{{site-id}}/webhooks",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.9",
+						"sites",
+						"{{site-id}}",
+						"webhooks"
+					]
+				},
+				"description": "Create a new webhook on the given site using the name, event type, and destination URL provided. This is for Tableau version 2020.3+ (api v3.9+)."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Create DatasourceRefreshFailed  webhook (2020.3+)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Tableau-Auth",
+						"value": "{{tableau-auth-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"webhook\": {\r\n      \"webhook-destination\": {\r\n         \"webhook-destination-http\": {\r\n            \"method\": \"POST\",\r\n            \"url\": \"https://app.mightycanary.com/tableau_webhooks/{{MightyCanaryAccountId}}/datasource_refresh_failed\"\r\n         }\r\n      },\r\n      \"event\": \"DatasourceRefreshFailed\",\r\n      \"name\": \"Mighty Canary Datasource Refresh Failed Webhook\"\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.9/sites/{{site-id}}/webhooks",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.9",
+						"sites",
+						"{{site-id}}",
+						"webhooks"
+					]
+				},
+				"description": "Create a new webhook on the given site using the name, event type, and destination URL provided. This is for Tableau version 2020.3+ (api v3.9+)."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Create DatasourceRefreshSucceeded webhook (2020.3+)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Tableau-Auth",
+						"value": "{{tableau-auth-token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"webhook\": {\r\n      \"webhook-destination\": {\r\n         \"webhook-destination-http\": {\r\n            \"method\": \"POST\",\r\n            \"url\": \"https://app.mightycanary.com/tableau_webhooks/{{MightyCanaryAccountId}}/datasource_refresh_succeeded\"\r\n         }\r\n      },\r\n      \"event\": \"DatasourceRefreshSucceeded\",\r\n      \"name\": \"Mighty Canary Datasource Refresh Succeeded Webhook\"\r\n   }\r\n}"
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.9/sites/{{site-id}}/webhooks",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.9",
+						"sites",
+						"{{site-id}}",
+						"webhooks"
+					]
+				},
+				"description": "Create a new webhook on the given site using the name, event type, and destination URL provided. This is for Tableau version 2020.3+ (api v3.9+)."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a webhook",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-Tableau-Auth",
+						"value": "{{tableau-auth-token}}"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{TableauServer}}/api/3.6/sites/{{site-id}}/webhooks/WEBHOOKID",
+					"host": [
+						"{{TableauServer}}"
+					],
+					"path": [
+						"api",
+						"3.6",
+						"sites",
+						"{{site-id}}",
+						"webhooks",
+						"WEBHOOKID"
+					]
+				},
+				"description": "Delete a single webhook by its ID."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
